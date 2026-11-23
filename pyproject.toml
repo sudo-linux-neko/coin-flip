@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (c) 2026 Vaibhav — final power over this project: Vaibhav.
+# Default license GPL-3.0-only, NEVER MIT. Ask Vaibhav before any public push.
+[project]
+name = "vaibhav-market-dojo"
+version = "1.5.0"
+description = "Anime Bloomberg-style market CLI + own 5M/300k CPU models. Free data only."
+requires-python = ">=3.12"
+authors = [{ name = "Vaibhav" }]
+license = { text = "GPL-3.0-only" }
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+# Strict repo standard: `ruff check .` must be clean. A few rules are
+# deliberately off because they contradict this project's standing orders:
+#  - PLC0415 (lazy imports): openbb/torch/sklearn imports cost seconds;
+#    lazy-loading keeps every CLI invocation fast (hyper-optimized rule).
+#  - BLE001/S110/S112/SIM105 (broad network excepts): every network call
+#    must degrade to a fallback, never crash the desk (robustness rule).
+#  - T201 (print): this IS a CLI; printing is the product.
+#  - PLR2004 (magic values): RSI 70/30, HTTP timeouts, finance thresholds
+#    are domain constants, named where it aids reading.
+#  - EM101/EM102/TRY003 (exception message style): short messages kept.
+#  - RUF001 (ambiguous unicode): –—·×→▲▼ are the terminal's chart
+#    typography; replacing them would harm readability.
+select = ["ALL"]
+ignore = ["PLC0415", "BLE001", "S110", "S112", "SIM105", "T201", "PLR2004",
+          "EM101", "EM102", "TRY003", "RUF001", "D301", "D415", "CPY001",
+          "TD002", "TD003", "FIX002", "PLR0913", "ANN401", "D203", "D213",
+          "COM812"]
+
+[tool.ruff.lint.isort]
+force-single-line = false
+known-first-party = ["vaibhav_ai_train", "vaibhav_ai_dataset", "vaibhav_market_cli", "vaibhav_ai"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+show_error_codes = true
+# Third-party libs without stubs (yfinance, sklearn, datasets, tqdm,
+# OpenBB factory union) are venv-provided; our own code must stay clean.
+[[tool.mypy.overrides]]
+module = ["yfinance.*", "sklearn.*", "datasets.*", "tqdm", "openbb.*", "torch.*"]
+ignore_missing_imports = true
